@@ -1,5 +1,5 @@
 # Author: Omkar Pathak
-
+import logging
 import io
 import os
 import re
@@ -18,6 +18,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 
+logger = logging.getLogger("pyresparser.utils")
 
 def extract_text_from_pdf(pdf_path):
     '''
@@ -153,6 +154,21 @@ def extract_text_from_doc(doc_path):
         return ' '
 
 
+def extract_text_from_txt(txt_path):
+    '''
+    Helper function to extract plain text from .txt files
+
+    :param txt_path: path to .txt file to be extracted
+    :return: string of extracted text
+    '''
+    try:
+        with open(txt_path, 'r') as fp:
+            text = fp.read()
+        return text
+    except KeyError:
+        return ' '
+
+
 def extract_text(file_path, extension):
     '''
     Wrapper function to detect the file extension and call text
@@ -169,6 +185,8 @@ def extract_text(file_path, extension):
         text = extract_text_from_docx(file_path)
     elif extension == '.doc':
         text = extract_text_from_doc(file_path)
+    elif extension == '.txt':
+        text = extract_text_from_txt(file_path)
     return text
 
 
@@ -194,9 +212,11 @@ def extract_entity_sections_grad(text):
         except IndexError:
             pass
         if p_key in cs.RESUME_SECTIONS_GRAD:
+            logger.debug(f"p_key = {p_key}")
             entities[p_key] = []
             key = p_key
         elif key and phrase.strip():
+            logger.debug(f"phrase = {phrase}")
             entities[key].append(phrase)
 
     # entity_key = False

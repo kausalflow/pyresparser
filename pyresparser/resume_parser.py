@@ -13,7 +13,8 @@ class ResumeParser(object):
 
     def __init__(
         self,
-        resume,
+        resume=None,
+        text_raw=None,
         skills_file=None,
         custom_regex=None
     ):
@@ -35,12 +36,14 @@ class ResumeParser(object):
             'no_of_pages': None,
             'total_experience': None,
         }
-        self.__resume = resume
-        if not isinstance(self.__resume, io.BytesIO):
-            ext = os.path.splitext(self.__resume)[1].split('.')[1]
-        else:
-            ext = self.__resume.name.split('.')[1]
-        self.__text_raw = utils.extract_text(self.__resume, '.' + ext)
+        if text_raw is None:
+            self.__resume = resume
+            if not isinstance(self.__resume, io.BytesIO):
+                ext = os.path.splitext(self.__resume)[1].split('.')[1]
+            else:
+                ext = self.__resume.name.split('.')[1]
+            text_raw = utils.extract_text(self.__resume, '.' + ext)
+        self.__text_raw = text_raw
         self.__text = ' '.join(self.__text_raw.split())
         self.__nlp = nlp(self.__text)
         self.__custom_nlp = custom_nlp(self.__text_raw)
