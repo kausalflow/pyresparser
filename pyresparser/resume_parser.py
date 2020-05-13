@@ -36,8 +36,8 @@ class ResumeParser(object):
             'no_of_pages': None,
             'total_experience': None,
         }
+        self.__resume = resume
         if text_raw is None:
-            self.__resume = resume
             if not isinstance(self.__resume, io.BytesIO):
                 ext = os.path.splitext(self.__resume)[1].split('.')[1]
             else:
@@ -121,7 +121,8 @@ class ResumeParser(object):
                 self.__details['total_experience'] = 0
         except KeyError:
             self.__details['total_experience'] = 0
-        self.__details['no_of_pages'] = utils.get_number_of_pages(
+        if self.__resume:
+            self.__details['no_of_pages'] = utils.get_number_of_pages(
                                             self.__resume
                                         )
         return
